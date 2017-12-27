@@ -83,6 +83,22 @@ describe('Configue Getters', () => {
             done();
         });
 
+        it('get nested, normalized value with underscores as a separator', (done) => {
+            process.env.deep__four_two = '42';
+            const configue = Configue({env: {normalize: true}, separator: '__'});
+            console.log(configue.get('deep')); 
+            // FIXIT: deep is { four_two: '42' } should be { fourTwo: '42' }
+            expect(configue.get('deep.fourTwo')).to.equal('42');
+            done();
+        });
+
+        it('get nested whitelist value with underscores as a separator', (done) => {
+            process.env.deep__four_two = '42';
+            const configue = Configue({env: {normalize: true, whitelist: ['deep__four_two']}, separator: '__'});
+            expect(configue.get('deep.four_two')).to.equal('42');
+            done();
+        });
+
         it('get defaultValue', (done) => {
             const configue = Configue({defaults: {A: '2', B: 42}});
             expect(configue.get('C', 'pasdefini')).to.equal('pasdefini');
